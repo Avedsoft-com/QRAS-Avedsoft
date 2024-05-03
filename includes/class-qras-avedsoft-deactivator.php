@@ -11,41 +11,42 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class QRAS_Avedsoft_Deactivator {
 
-    /**
-     * Deactivate the plugin and clean up associated data.
-     * This method deletes plugin options from the database and removes QR code-related data and files.
-     */
     public static function deactivate() {
-        global $wpdb;
         // Delete plugin options from the database
         delete_option('qras_avedsoft_options');
 
-        // Direct SQL query to get all post IDs with the QR code path meta key
-        $post_ids = $wpdb->get_col("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_qr_code_path'");
+        // Get all post IDs with QR code path using WP_Query
+        $query = new WP_Query([
+            'post_type'   => 'any',
+            'meta_key'    => '_qr_code_path',
+            'fields'      => 'ids',
+            'nopaging'    => true
+        ]);
 
-        // Iterate over each post ID to delete meta fields and associated file
-        foreach ($post_ids as $post_id) {
-            // Retrieve the path to the QR code file from post meta
-            $qr_code_path = get_post_meta($post_id, '_qr_code_path', true);
+        $post_ids = $query->posts;
 
-            // Delete all associated post meta
-            $meta_keys = ['_qr_code_url', '_qr_code_id', '_qras_code_access', '_qr_code_last_access', '_qr_code_path'];
-            foreach ($meta_keys as $meta_key) {
-                $wpdb->delete($wpdb->postmeta, array('post_id' => $post_id, 'meta_key' => $meta_key), array('%d', '%s'));
-            }
+        if (!empty($post_ids)) {
+            foreach ($post_ids as $post_id) {
+                // Delete post meta using WordPress functions
+                $qr_code_path = get_post_meta($post_id, '_qr_code_path', true);
+                delete_post_meta($post_id, '_qr_code_url');
+                delete_post_meta($post_id, '_qr_code_id');
+                delete_post_meta($post_id, '_qras_code_access');
+                delete_post_meta($post_id, '_qr_code_last_access');
+                delete_post_meta($post_id, '_qr_code_path');
 
-            // Delete the file if it exists
-            if ($qr_code_path && file_exists($qr_code_path)) {
-                unlink($qr_code_path);
+                // File deletion process
+                if ($qr_code_path && file_exists($qr_code_path)) {
+                    wp_delete_file($qr_code_path);
 
-                // Remove the directory if it's empty
-                $directory = dirname($qr_code_path);
-                if (is_dir($directory) && count(scandir($directory)) == 2) {
-                    rmdir($directory);
+                    // Remove the directory if it's empty
+                    $directory = dirname($qr_code_path);
+                    if (is_dir($directory) && count(scandir($directory)) == 2) {
+                        rmdir($directory);
+                    }
                 }
             }
         }
     }
-
-
 }
+

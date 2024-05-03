@@ -273,16 +273,20 @@ class QRAS_Avedsoft
         $qr_code_url = add_query_arg('qr_id', $unique_token, get_permalink($post_id));
         $qr_url = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode($qr_code_url);
 
-        $upload_dir = wp_upload_dir();
-        $qr_code_path = $upload_dir['path'] . '/qr_code_' . $post_id . '.png';
-
-        $image_data = file_get_contents($qr_url);
-        if ($image_data === false) {
+        $response = wp_remote_get($qr_url);
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) != 200) {
             wp_send_json_error(array('message' => esc_html__('Failed to download QR code', 'qras-avedsoft')));
             return;
         }
 
-        if (file_put_contents($qr_code_path, $image_data) === false) {
+        $image_data = wp_remote_retrieve_body($response);
+
+        $upload_dir = wp_upload_dir();
+        $qr_code_path = $upload_dir['path'] . '/qr_code_' . $post_id . '.png';
+
+        global $wp_filesystem;
+        WP_Filesystem();
+        if (!$wp_filesystem->put_contents($qr_code_path, $image_data)) {
             wp_send_json_error(array('message' => esc_html__('Failed to save QR code file', 'qras-avedsoft')));
             return;
         }
@@ -295,6 +299,7 @@ class QRAS_Avedsoft
         // Return the URL of the saved QR code image
         wp_send_json_success(array('url' => $qr_code_url));
     }
+
 
 
     /**
@@ -327,7 +332,7 @@ class QRAS_Avedsoft
 
         if ($qr_code_path && file_exists($qr_code_path)) {
             // Attempt to delete the QR code file
-            if (!unlink($qr_code_path)) {
+            if (!wp_delete_file($qr_code_path)) {
                 wp_send_json_error(array('message' => esc_html__('Failed to delete QR code file', 'qras-avedsoft')));
                 return;
             }

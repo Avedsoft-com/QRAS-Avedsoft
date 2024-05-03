@@ -87,11 +87,10 @@ class QRAS_Avedsoft_Admin {
                 '<input type="checkbox" id="post_types_%1$s" name="qras_avedsoft_options[post_types][%1$s]" value="1" %2$s />' .
                 '<label for="post_types_%1$s"> %3$s</label><br />',
                 esc_attr($post_type->name),
-                $checked,
-                esc_html__($post_type->labels->singular_name, 'qras-avedsoft')
+                esc_attr($checked),
+                esc_html($post_type->labels->singular_name)
             );
         }
-
     }
 
 
