@@ -1,11 +1,18 @@
 # QRAS-Avedsoft
 Contributors: ss1919
+
 Tags: QR Code, QRAS-Avedsoft, QR Code Generator
+
 Requires at least: 5.5
+
 Tested up to: 6.5.2
+
 Requires PHP: 7.4
+
 Stable tag: 1.0
+
 License: GPLv3 or later
+
 License URI: <a href="http://www.gnu.org/licenses/gpl-3.0.html"> http://www.gnu.org/licenses/gpl-3.0.html </a>
 
 == Description ==
