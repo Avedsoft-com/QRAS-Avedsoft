@@ -5,11 +5,11 @@
  * Plugin URI:        https://github.com/Avedsoft-com/QRAS-Avedsoft
  * Description:       Plugin for generating QR codes for custom post types in WordPress, with access to posts only through a QR code.
  * Tags:              QR Code, Generating QR codes
- * Version:           1.0
+ * Version:           1.1.0
  * Author:            ss1919
  * Author URI:        https://github.com/ss1919
- * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * License:           GPLv3 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:       qras-avedsoft
  * Domain Path: /lang
  */

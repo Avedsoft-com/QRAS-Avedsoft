@@ -95,7 +95,7 @@ class QRAS_Avedsoft
                     // Check if the transient exists
                     if (false === get_transient($transient_key)) {
                         // Grant access for this request and set a transient to block further access
-                        set_transient($transient_key, 'accessed', 10); // Blocks further access for 10 seconds
+                        set_transient($transient_key, 'qras_avedsoft_accessed', 10); // Blocks further access for 10 seconds
                     } else {
                         // If access was already granted once, redirect to home page
                         wp_redirect(home_url());
